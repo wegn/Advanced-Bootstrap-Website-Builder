@@ -32,32 +32,58 @@ $('document').ready(function() {
             $(".elements .draggable").draggable({
                 helper: 'clone',
                 stop: function() {
-                    $(this).draggable('widget')
-                            .clone().popover({
-                        html: true,
-                        content: function() {
-                            return $("#popover-" + $(this).attr('id')).html();
-                        }
-                    })
-                            .appendTo($('#sortable')).parent()
-                            .delegate('button#saveattr', 'click', function(e) {
-                                e.preventDefault();
-                                var field = $($(this).parents().find('.arrow')[0]).parent().prev();
-                                var field_label = $(this).closest('form').find('#label').val();
-                                var field_css = $(this).closest('form').find('#inputsize').val();
-                                var field_placeholder = $(this).closest('form').find('#placeholder').val();
-                                var field_id = $(this).closest('form').find('#id').val();
-                                $(field.children()[1]).attr('id', field_id).attr('class', field_css).attr('placeholder', field_placeholder);
-                                $('.draggable').popover('hide');
-                                $(field.children()[0]).text(field_label);
-                            })
-                            .delegate('button#cancel', 'click', function(e) {
-                                e.preventDefault();
-                                $('.draggable').popover('hide');
-                            });
+                    if ($(this).draggable('widget').attr('id') === 'grid') {
+                        var grid = gridSystemGenerator($($(this).draggable('widget').children()[1]));
+                        grid.appendTo($('#sortable'));
+                    }
+                    else {
+                        $(this).draggable('widget')
+                                .clone().popover({
+                            html: true,
+                            content: function() {
+                                return $("#popover-" + $(this).attr('id')).html();
+                            }
+                        })
+                                .appendTo($('#sortable')).parent()
+                                .delegate('button#saveattr', 'click', function(e) {
+                                    e.preventDefault();
+                                    var field = $($(this).parents().find('.arrow')[0]).parent().prev();
+                                    var field_label = $(this).closest('form').find('#label').val();
+                                    var field_css = $(this).closest('form').find('#inputsize').val();
+                                    var field_placeholder = $(this).closest('form').find('#placeholder').val();
+                                    var field_id = $(this).closest('form').find('#id').val();
+                                    $(field.children()[1]).attr('id', field_id).attr('class', field_css).attr('placeholder', field_placeholder);
+                                    $('.draggable').popover('hide');
+                                    $(field.children()[0]).text(field_label);
+                                })
+                                .delegate('button#cancel', 'click', function(e) {
+                                    e.preventDefault();
+                                    $('.draggable').popover('hide');
+                                });
+                    }
 
                 }
             });
+            function gridSystemGenerator(details) {
+                var e = 0;
+                var t = "";
+                var n = details.val().split(" ", 12);
+                $.each(n, function(n, r) {
+                    if (!isNaN(parseInt(r))) {
+                        e = e + parseInt(r);
+                        t += '<div class="span' + r + ' column"></div>';
+                    }
+                });
+                if (e == 12) {
+                    return $(t);
+                }
+                else
+                {
+                    alert("Total grid column size must be equal to 12");
+                    return false;
+                }
+
+            }
         }
     });
 
