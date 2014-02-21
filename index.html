@@ -1,30 +1,43 @@
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Advanced Bootstrap Website Builder</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
         <!--link href="assets/css/jquery-ui.css" rel="stylesheet"-->
-        <link href="assets/css/bootstrap.css" rel="stylesheet">
-        <link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <!--link href="assets/css/bootstrap.css" rel="stylesheet"-->
+        <link href="assets/css/bootstrap-combined.min.css" rel="stylesheet">
+
+        <link href="assets/css/layoutit.css" rel="stylesheet">
+        <!--link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet"-->
         <script src="assets/js/lib/jquery-2.0.0.min.js"></script>
+        <script src="assets/js/lib/blob.js"></script>
         <script src="assets/js/lib/jquery-ui.js"></script>
+        <script src="assets/js/lib/jquery.ui.touch-punch.min.js"></script>
         <script src="assets/js/lib/bootstrap-tooltip.js"></script>
         <script src="assets/js/lib/bootstrap-popover.js"></script>
         <script src="assets/js/main.js"></script>
     </head>
     <body>
-        <div class="navbar">
+        <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
-                <div class="container">
-                    <a class="brand">Advanced Bootstrap Website Builder</a>
+                <div class="container-fluid">
+                    <div class="nav-collapse collapse">
+                        <a href="#" class="brand">Advanced Bootstrap Website Builder</a>
+                    </div>
+                    <!--/.nav-collapse --> 
                 </div>
             </div>
         </div>
-        <div class="container">
-            <h2>Drag and drop elements to build UI</h2> 
-            <div class="row clearfix" style="margin-top: 70px">
-                <div class="elements span-6"></div>
-                <div id="sortable" class="span-6"></div>
+        <div class="container-fluid">
+            <div class="row-fluid top-container">
+                <div class="">
+                    <div class="sidebar-nav">
+                        <ul class="nav nav-list accordion-group">
+                            <li style="display: list-item;" class="rows elements"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sortable" ></div>
             </div>
         </div>
     </body>
