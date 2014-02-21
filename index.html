@@ -12,7 +12,8 @@
         <script src="assets/js/lib/jquery-2.0.0.min.js"></script>
         <script src="assets/js/lib/blob.js"></script>
         <script src="assets/js/lib/jquery-ui.js"></script>
-        <script src="assets/js/lib/jquery.ui.touch-punch.min.js"></script>
+        <script src="assets/js/lib/bootstrap-tooltip.js"></script>
+        <script src="assets/js/lib/FileSaver.js"></script>
         <script src="assets/js/lib/bootstrap-tooltip.js"></script>
         <script src="assets/js/lib/bootstrap-popover.js"></script>
         <script src="assets/js/main.js"></script>
@@ -23,6 +24,7 @@
                 <div class="container-fluid">
                     <div class="nav-collapse collapse">
                         <a href="#" class="brand">Advanced Bootstrap Website Builder</a>
+                        <button id="download-html" class="btn btn-success" type="button">Download HTML</button>
                     </div>
                     <!--/.nav-collapse --> 
                 </div>
@@ -37,7 +39,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="sortable" ></div>
+                <div id="html-container" class="sortable"></div>
             </div>
         </div>
     </body>
