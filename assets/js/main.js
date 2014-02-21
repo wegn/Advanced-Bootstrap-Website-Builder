@@ -6,30 +6,32 @@ $('document').ready(function() {
         var j = -1;
         var load_file = function(url) {
             $.get(url, function(res) {
-                if (url.indexOf('attributesForm') > -1) {
-                    $('.top-container').append(res);
-                }
-                else {
-                    $('.elements').append(res);
-                }
-                if (j === components.length - 1) {
-                    makeDraggable();
-                }
-                if (i >= components.length - 1) {
-
-                    if (typeof (components[++j]) !== "undefined") {
-                        load_file("assets/components/attributesForm/" + components[j] + ".html");
+              
+                    if (url.indexOf('attributesForm') > -1) {
+                        $('.top-container').append(res);
                     }
-                }
-                if (typeof (components[++i]) !== "undefined") {
-                    load_file("assets/components/elements/" + components[i] + ".html");
-                }
+                    else {
+                        $('.elements').append(res);
+                    }
+                    if (j === components.length - 1) {
+                        makeDraggable();
+                    }
+                    if (i >= components.length - 1) {
+
+                        if (typeof (components[++j]) !== "undefined") {
+                            load_file("assets/components/attributesForm/" + components[j] + ".html");
+                        }
+                    }
+                    if (typeof (components[++i]) !== "undefined") {
+                        load_file("assets/components/elements/" + components[i] + ".html");
+                    }
+              
             });
         };
         load_file("assets/components/elements/" + components[i] + ".html");
         function makeDraggable() {
             $(".sortable").sortable();
-            $(".elements .draggable").draggable({
+            $(".draggable").draggable({
                 helper: 'clone',
                 stop: function(e, t) {
                     if ($(this).draggable('widget').attr('id') === 'grid') {
@@ -38,7 +40,7 @@ $('document').ready(function() {
                             grid.appendTo($('.sortable').not('.column'));
                         }
                     }
-                    else {
+                    else if ($('#html-container').children().length>0){
                         var dragged_clone = $(this).draggable('widget').clone();
                         dragged_clone.popover({
                             html: true,
@@ -67,6 +69,16 @@ $('document').ready(function() {
                             e.preventDefault();
                             $('.draggable').popover('hide');
                         });
+                        $('.sortable.column').delegate('button#remove', 'click', function(e) {
+                            e.preventDefault();
+                            //$('.draggable').popover('hide');
+                            var field = $($(this).parents().find('.arrow')[0]).parent().prev();
+                            field.remove();
+                             $(this).closest('.popover').hide();
+                        });
+                    }
+                    else{
+                        alert('Elements can only be dragged on grids, Please drag a grid first !');
                     }
 
                 }
