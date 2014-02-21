@@ -7,7 +7,7 @@ $('document').ready(function() {
         var load_file = function(url) {
             $.get(url, function(res) {
                 if (url.indexOf('attributesForm') > -1) {
-                    $('.row.clearfix').append(res);
+                    $('.top-container').append(res);
                 }
                 else {
                     $('.elements').append(res);
@@ -28,37 +28,75 @@ $('document').ready(function() {
         };
         load_file("assets/components/elements/" + components[i] + ".html");
         function makeDraggable() {
-            $("#sortable").sortable();
+            $(".sortable").sortable();
             $(".elements .draggable").draggable({
                 helper: 'clone',
-                stop: function() {
-                    $(this).draggable('widget')
-                            .clone().popover({
-                        html: true,
-                        content: function() {
-                            return $("#popover-" + $(this).attr('id')).html();
+                stop: function(e, t) {
+                    if ($(this).draggable('widget').attr('id') === 'grid') {
+                        var grid = gridSystemGenerator($($(this).draggable('widget').children()[1]));
+                        if (grid) {
+                            grid.appendTo($('.sortable').not('.column'));
                         }
-                    })
-                            .appendTo($('#sortable')).parent()
-                            .delegate('button#saveattr', 'click', function(e) {
-                                e.preventDefault();
-                                var field = $($(this).parents().find('.arrow')[0]).parent().prev();
-                                var field_label = $(this).closest('form').find('#label').val();
-                                var field_css = $(this).closest('form').find('#inputsize').val();
-                                var field_placeholder = $(this).closest('form').find('#placeholder').val();
-                                var field_id = $(this).closest('form').find('#id').val();
-                                $(field.children()[1]).attr('id', field_id).attr('class', field_css).attr('placeholder', field_placeholder);
-                                $('.draggable').popover('hide');
-                                $(field.children()[0]).text(field_label);
-                            })
-                            .delegate('button#cancel', 'click', function(e) {
-                                e.preventDefault();
-                                $('.draggable').popover('hide');
-                            });
+                    }
+                    else {
+                        var dragged_clone = $(this).draggable('widget').clone();
+                        dragged_clone.popover({
+                            html: true,
+                            content: function() {
+                                return $("#popover-" + $(this).attr('id')).html();
+                            }
+                        });
+                        $('.sortable.column').on('mouseover', function(event) {
+                            if (dragged_clone) {
+                                dragged_clone.appendTo($(this));
+                            }
+                            dragged_clone = null;
+                        });
+                        $('.sortable.column').delegate('button#saveattr', 'click', function(e) {
+                            e.preventDefault();
+                            var field = $($(this).parents().find('.arrow')[0]).parent().prev();
+                            var field_label = $(this).closest('form').find('#label').val();
+                            var field_css = $(this).closest('form').find('#inputsize').val();
+                            var field_placeholder = $(this).closest('form').find('#placeholder').val();
+                            var field_id = $(this).closest('form').find('#id').val();
+                            $(field.children()[1]).attr('id', field_id).attr('class', field_css).attr('placeholder', field_placeholder);
+                            $('.draggable').popover('hide');
+                            $(field.children()[0]).text(field_label);
+                        });
+                        $('.sortable.column').delegate('button#cancel', 'click', function(e) {
+                            e.preventDefault();
+                            $('.draggable').popover('hide');
+                        });
+                    }
 
                 }
             });
+            function gridSystemGenerator(details) {
+                var e = 0;
+                var t = '<div class="row-fluid clearfix">';
+                var n = details.val().split(" ", 12);
+                $.each(n, function(n, r) {
+                    if (!isNaN(parseInt(r))) {
+                        e = e + parseInt(r);
+                        t += '<div class="span' + r + ' column sortable"></div>';
+                    }
+                });
+                t += '</div>';
+                if (e == 12) {
+                    return $(t);
+                }
+                else
+                {
+                    alert("Total grid column size must be equal to 12");
+                    return false;
+                }
+
+            }
         }
+    });
+    $('#download-html').click(function() {
+        var blob = new Blob([$('#html-container').html()], {type: "text/plain;charset=utf-8"});
+        saveAs(blob, "output.html");
     });
 
 });
