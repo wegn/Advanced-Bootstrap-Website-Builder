@@ -40,7 +40,7 @@ $('document').ready(function() {
                             grid.appendTo($('.sortable').not('.column'));
                         }
                     }
-                    else {
+                    else if ($('#html-container').children().length>0){
                         var dragged_clone = $(this).draggable('widget').clone();
                         dragged_clone.popover({
                             html: true,
@@ -76,6 +76,9 @@ $('document').ready(function() {
                             field.remove();
                              $(this).closest('.popover').hide();
                         });
+                    }
+                    else{
+                        alert('Elements can only be dragged on grids, Please drag a grid first !');
                     }
 
                 }
