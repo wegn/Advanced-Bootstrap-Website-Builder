@@ -65,9 +65,13 @@ $('document').ready(function() {
                             var field_css = $(this).closest('form').find('#inputsize').val();
                             var field_placeholder = $(this).closest('form').find('#placeholder').val();
                             var field_id = $(this).closest('form').find('#id').val();
+                            var field_style = $(this).closest('form').find('#field-style').val();
                             $(field.children()[1]).attr('id', field_id).attr('class', field_css).attr('placeholder', field_placeholder);
                             $('.draggable').popover('hide');
                             $(field.children()[0]).text(field_label);
+                            field.children().each(function(){
+                                $(this).attr('style',field_style);
+                            });
                         });
                         $('.sortable.column').delegate('button#cancel', 'click', function(e) {
                             e.preventDefault();
