@@ -6,26 +6,26 @@ $('document').ready(function() {
         var j = -1;
         var load_file = function(url) {
             $.get(url, function(res) {
-              
-                    if (url.indexOf('attributesForm') > -1) {
-                        $('.top-container').append(res);
-                    }
-                    else {
-                        $('.elements').append(res);
-                    }
-                    if (j === components.length - 1) {
-                        makeDraggable();
-                    }
-                    if (i >= components.length - 1) {
 
-                        if (typeof (components[++j]) !== "undefined") {
-                            load_file("assets/components/attributesForm/" + components[j] + ".html");
-                        }
+                if (url.indexOf('attributesForm') > -1) {
+                    $('.top-container').append(res);
+                }
+                else {
+                    $('.elements').append(res);
+                }
+                if (j === components.length - 1) {
+                    makeDraggable();
+                }
+                if (i >= components.length - 1) {
+
+                    if (typeof (components[++j]) !== "undefined") {
+                        load_file("assets/components/attributesForm/" + components[j] + ".html");
                     }
-                    if (typeof (components[++i]) !== "undefined") {
-                        load_file("assets/components/elements/" + components[i] + ".html");
-                    }
-              
+                }
+                if (typeof (components[++i]) !== "undefined") {
+                    load_file("assets/components/elements/" + components[i] + ".html");
+                }
+
             });
         };
         load_file("assets/components/elements/" + components[i] + ".html");
@@ -38,13 +38,13 @@ $('document').ready(function() {
                         var grid = gridSystemGenerator($($(this).draggable('widget').children()[1]));
                         if (grid) {
                             grid.appendTo($('.sortable').not('.column'));
-                            $('.sortable').delegate('#close-grid', 'click', function(){
+                            $('.sortable').delegate('#close-grid', 'click', function() {
                                 $(this).next().remove();
                                 $(this).remove();
                             });
                         }
                     }
-                    else if ($('#html-container').children().length>0){
+                    else if ($('#html-container').children().length > 0) {
                         var dragged_clone = $(this).draggable('widget').clone();
                         dragged_clone.popover({
                             html: true,
@@ -66,12 +66,24 @@ $('document').ready(function() {
                             var field_placeholder = $(this).closest('form').find('#placeholder').val();
                             var field_id = $(this).closest('form').find('#id').val();
                             var field_style = $(this).closest('form').find('#field-style').val();
+                            var field_multiselect = $(this).closest('form').find('#multiple-select').is(":checked");
                             $(field.children()[1]).attr('id', field_id).attr('class', field_css).attr('placeholder', field_placeholder);
                             $('.draggable').popover('hide');
                             $(field.children()[0]).text(field_label);
-                            field.children().each(function(){
-                                $(this).attr('style',field_style);
+                            field.children().each(function() {
+                                if ($(this).hasClass('controls')) {
+                                    $(this).children().each(function() {
+                                        $(this).attr('style', field_style);
+                                    });
+                                }
+                                $(this).attr('style', field_style);
                             });
+                            if (field_multiselect) {
+                                field.find('select').attr('multiple', 'multiple');
+                            }
+                            else {
+                                field.find('select').removeAttr('multiple');
+                            }
                         });
                         $('.sortable.column').delegate('button#cancel', 'click', function(e) {
                             e.preventDefault();
@@ -79,15 +91,14 @@ $('document').ready(function() {
                         });
                         $('.sortable.column').delegate('button#remove', 'click', function(e) {
                             e.preventDefault();
-                            //$('.draggable').popover('hide');
                             var field = $($(this).parents().find('.arrow')[0]).parent().prev();
                             field.remove();
-                             $(this).closest('.popover').hide();
-                             e.stopPropagation();
-                             e.stopImmediatePropagation();
+                            $(this).closest('.popover').hide();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
                         });
                     }
-                    else{
+                    else {
                         alert('Elements can only be dragged on grids, Please drag a grid first !');
                     }
 
@@ -95,7 +106,7 @@ $('document').ready(function() {
             });
             function gridSystemGenerator(details) {
                 var e = 0;
-                var t = '<div class="container"><a id="close-grid" class="remove label label-important"><i class="icon-remove icon-white"></i>Remove</a><div class="row-fluid clearfix">';
+                var t = '<div><a id="close-grid" class="remove label label-important"><i class="icon-remove icon-white"></i>Remove</a><div class="row-fluid clearfix">';
                 var n = details.val().split(" ", 12);
                 $.each(n, function(n, r) {
                     if (!isNaN(parseInt(r))) {
