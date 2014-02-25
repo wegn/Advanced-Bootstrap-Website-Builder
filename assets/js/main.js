@@ -30,14 +30,18 @@ $('document').ready(function() {
         };
         load_file("assets/components/elements/" + components[i] + ".html");
         function makeDraggable() {
-            $(".sortable").sortable();
+            $(".sortable").sortable({opacity: .35,connectWith: ".column"});
             $(".draggable").draggable({
                 helper: 'clone',
+                opacity: .35,
                 stop: function(e, t) {
                     if ($(this).draggable('widget').attr('id') === 'grid') {
                         var grid = gridSystemGenerator($($(this).draggable('widget').children()[1]));
                         if (grid) {
                             grid.appendTo($('.sortable').not('.column'));
+                            grid.find('.sortable').each(function(){
+                                $(this).sortable({opacity: .35,connectWith: ".column"});
+                            });
                             $('.sortable').delegate('#close-grid', 'click', function() {
                                 $(this).next().remove();
                                 $(this).remove();
