@@ -62,6 +62,8 @@ $('document').ready(function() {
                             e.preventDefault();
                             var field = $($(this).parents().find('.arrow')[0]).parent().prev();
                             var field_label = $(this).closest('form').find('#label').val();
+                            var button_text = $(this).closest('form').find('#btn-text').val();
+                            var button_color_css = $(this).closest('form').find('#btn-color-css').val();
                             var field_css = $(this).closest('form').find('#inputsize').val();
                             var field_placeholder = $(this).closest('form').find('#placeholder').val();
                             var field_id = $(this).closest('form').find('#id').val();
@@ -84,6 +86,13 @@ $('document').ready(function() {
                             else {
                                 field.find('select').removeAttr('multiple');
                             }
+                            if(button_text){
+                                $(field.children()[1]).text(button_text);
+                            }
+                            if(button_color_css){
+                                $(field.children()[1]).addClass(button_color_css);
+                                $(field.children()[1]).addClass('btn');
+                            }
                         });
                         $('.sortable.column').delegate('button#cancel', 'click', function(e) {
                             e.preventDefault();
@@ -92,8 +101,8 @@ $('document').ready(function() {
                         $('.sortable.column').delegate('button#remove', 'click', function(e) {
                             e.preventDefault();
                             var field = $($(this).parents().find('.arrow')[0]).parent().prev();
+                            $('.draggable').popover('hide');
                             field.remove();
-                            $(this).closest('.popover').hide();
                             e.stopPropagation();
                             e.stopImmediatePropagation();
                         });
