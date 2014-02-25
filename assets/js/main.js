@@ -29,23 +29,31 @@ $('document').ready(function() {
             });
         };
         load_file("assets/components/elements/" + components[i] + ".html");
+        var dragged_clone = null;
         function makeDraggable() {
-            $(".sortable").sortable();
+            $(".sortable").sortable({opacity: .35, connectWith: ".column"});
             $(".draggable").draggable({
                 helper: 'clone',
+                opacity: .35,
+                start: function() {
+                    dragged_clone = null;
+                },
                 stop: function(e, t) {
                     if ($(this).draggable('widget').attr('id') === 'grid') {
                         var grid = gridSystemGenerator($($(this).draggable('widget').children()[1]));
                         if (grid) {
                             grid.appendTo($('.sortable').not('.column'));
-                            $('.sortable').delegate('#close-grid', 'click', function() {
+                            grid.find('.sortable').each(function() {
+                                $(this).sortable({opacity: .35, connectWith: ".column"});
+                            });
+                            $('.sortable').delegate('.close-grid', 'click', function() {
                                 $(this).next().remove();
                                 $(this).remove();
                             });
                         }
                     }
                     else if ($('#html-container').children().length > 0) {
-                        var dragged_clone = $(this).draggable('widget').clone();
+                        dragged_clone = $(this).draggable('widget').clone();
                         dragged_clone.popover({
                             html: true,
                             content: function() {
@@ -86,10 +94,10 @@ $('document').ready(function() {
                             else {
                                 field.find('select').removeAttr('multiple');
                             }
-                            if(button_text){
+                            if (button_text) {
                                 $(field.children()[1]).text(button_text);
                             }
-                            if(button_color_css){
+                            if (button_color_css) {
                                 $(field.children()[1]).addClass(button_color_css);
                                 $(field.children()[1]).addClass('btn');
                             }
@@ -110,12 +118,11 @@ $('document').ready(function() {
                     else {
                         alert('Elements can only be dragged on grids, Please drag a grid first !');
                     }
-
                 }
             });
             function gridSystemGenerator(details) {
                 var e = 0;
-                var t = '<div><a id="close-grid" class="remove label label-important"><i class="icon-remove icon-white"></i>Remove</a><div class="row-fluid clearfix">';
+                var t = '<div><a class="remove label label-important close-grid"><i class="icon-remove icon-white"></i>Remove</a><div class="row-fluid clearfix">';
                 var n = details.val().split(" ", 12);
                 $.each(n, function(n, r) {
                     if (!isNaN(parseInt(r))) {
@@ -137,7 +144,9 @@ $('document').ready(function() {
         }
     });
     $('#download-html').click(function() {
-        var blob = new Blob([$('#html-container').html()], {type: "text/plain;charset=utf-8"});
+        var tt = $($('#html-container').html());
+        tt.find('.close-grid').remove();
+        var blob = new Blob([tt.html()], {type: "text/plain;charset=utf-8"});
         saveAs(blob, "output.html");
     });
 
