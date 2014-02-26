@@ -1,5 +1,88 @@
 $('document').ready(function() {
-
+    function saveAttributes(that) {
+        var field = $(that.parents().find('.arrow')[0]).parent().prev();
+        var field_options_textarea = that.closest('form').find('#options-textarea').val();
+        var field_label = that.closest('form').find('#label').val();
+        var button_text = that.closest('form').find('#btn-text').val();
+        var button_color_css = that.closest('form').find('#btn-color-css').val();
+        var field_css = that.closest('form').find('#inputsize').val();
+        var field_placeholder = that.closest('form').find('#placeholder').val();
+        var field_id = that.closest('form').find('#id').val();
+        var field_style = that.closest('form').find('#field-style').val();
+        var field_multiselect = that.closest('form').find('#multiple-select').is(":checked");
+        $(field.children()[1]).attr('id', field_id).attr('class', field_css).attr('placeholder', field_placeholder);
+        $('.draggable').popover('hide');
+        $(field.children()[0]).text(field_label);
+        if (field.attr('id') === 'radio') {
+            if (typeof (field_options_textarea) !== "undefined" && field_options_textarea.length > 0) {
+                var opts = field_options_textarea.split('\n');
+                var options_html = $('<div></div>');
+                for (i = 0; i < opts.length; i++) {
+                    var opts_html = $('<label class="radio" style="display:block;"></label>');
+                    opts_html.text(opts[i]);
+                    opts_html.append('<input type="radio" name="radios" value="">');
+                    opts_html.children('input').val(opts[i]);
+                    options_html.append(opts_html);
+                }
+                field.children().each(function() {
+                    if ($(this).hasClass('controls')) {
+                        $(this).html(options_html.html());
+                    }
+                });
+            }
+        }
+        if (field.attr('id') === 'checkbox') {
+            if (typeof (field_options_textarea) !== "undefined" && field_options_textarea.length > 0) {
+                var opts = field_options_textarea.split('\n');
+                var options_html = $('<div></div>');
+                for (i = 0; i < opts.length; i++) {
+                    var opts_html = $('<label class="checkbox" style="display:block;"></label>');
+                    opts_html.text(opts[i]);
+                    opts_html.append('<input type="checkbox" name="checkboxs" value="">');
+                    opts_html.children('input').val(opts[i]);
+                    options_html.append(opts_html);
+                }
+                field.children().each(function() {
+                    if ($(this).hasClass('controls')) {
+                        $(this).html(options_html.html());
+                    }
+                });
+            }
+        }
+        if (field.attr('id') === 'select-list') {
+            if (typeof (field_options_textarea) !== "undefined" && field_options_textarea.length > 0) {
+                var opts = field_options_textarea.split('\n');
+                var options_html = $('<div></div>');
+                for (i = 0; i < opts.length; i++) {
+                    var opts_html = $('<option></option>');
+                    opts_html.text(opts[i]);
+                    options_html.append(opts_html);
+                }
+                field.find('select').html(options_html.html());
+            }
+            if (field_multiselect) {
+                field.find('select').attr('multiple', 'multiple');
+            }
+            else {
+                field.find('select').removeAttr('multiple');
+            }
+        }
+        field.children().each(function() {
+            if ($(this).hasClass('controls')) {
+                $(this).children().each(function() {
+                    $(this).attr('style', field_style);
+                });
+            }
+            $(this).attr('style', field_style);
+        });
+        if (button_text) {
+            $(field.children()[1]).text(button_text);
+        }
+        if (button_color_css) {
+            $(field.children()[1]).addClass(button_color_css);
+            $(field.children()[1]).addClass('btn');
+        }
+    }
     $.get("assets/components/config.json", function(response) {
         var components = response["components"];
         var i = 0;
@@ -68,39 +151,7 @@ $('document').ready(function() {
                         });
                         $('.sortable.column').delegate('button#saveattr', 'click', function(e) {
                             e.preventDefault();
-                            var field = $($(this).parents().find('.arrow')[0]).parent().prev();
-                            var field_label = $(this).closest('form').find('#label').val();
-                            var button_text = $(this).closest('form').find('#btn-text').val();
-                            var button_color_css = $(this).closest('form').find('#btn-color-css').val();
-                            var field_css = $(this).closest('form').find('#inputsize').val();
-                            var field_placeholder = $(this).closest('form').find('#placeholder').val();
-                            var field_id = $(this).closest('form').find('#id').val();
-                            var field_style = $(this).closest('form').find('#field-style').val();
-                            var field_multiselect = $(this).closest('form').find('#multiple-select').is(":checked");
-                            $(field.children()[1]).attr('id', field_id).attr('class', field_css).attr('placeholder', field_placeholder);
-                            $('.draggable').popover('hide');
-                            $(field.children()[0]).text(field_label);
-                            field.children().each(function() {
-                                if ($(this).hasClass('controls')) {
-                                    $(this).children().each(function() {
-                                        $(this).attr('style', field_style);
-                                    });
-                                }
-                                $(this).attr('style', field_style);
-                            });
-                            if (field_multiselect) {
-                                field.find('select').attr('multiple', 'multiple');
-                            }
-                            else {
-                                field.find('select').removeAttr('multiple');
-                            }
-                            if (button_text) {
-                                $(field.children()[1]).text(button_text);
-                            }
-                            if (button_color_css) {
-                                $(field.children()[1]).addClass(button_color_css);
-                                $(field.children()[1]).addClass('btn');
-                            }
+                            saveAttributes($(this));
                         });
                         $('.sortable.column').delegate('button#cancel', 'click', function(e) {
                             e.preventDefault();
@@ -144,9 +195,20 @@ $('document').ready(function() {
         }
     });
     $('#download-html').click(function() {
-        var tt = $($('#html-container').html());
-        tt.find('.close-grid').remove();
-        var blob = new Blob([tt.html()], {type: "text/plain;charset=utf-8"});
+        var dwnld_html = $($('#html-container').html());
+        dwnld_html.find('.close-grid').remove();
+        var clsElements = dwnld_html.find("*");
+        $(clsElements).each(function() {
+            $(this).removeClass('sortable').removeClass('column').removeClass('ui-sortable').removeClass('draggable').removeClass('box').removeClass('preview').removeClass('ui-draggable').removeAttr('data-original-title').removeAttr('title');
+            if ($(this).attr('class') == "") {
+                $(this).removeAttr('class');
+            }
+        });
+        var zz = "";
+        dwnld_html.each(function() {
+            zz += $(this).html();
+        });
+        var blob = new Blob([zz], {type: "text/plain;charset=utf-8"});
         saveAs(blob, "output.html");
     });
 
