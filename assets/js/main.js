@@ -1,4 +1,21 @@
 $('document').ready(function() {
+    function cleanup() {
+        var dwnld_html = $($('#html-container').html());
+        dwnld_html.find('.close-grid').remove();
+        var clsElements = dwnld_html.find("*");
+        $(clsElements).each(function() {
+            $(this).removeClass('sortable').removeClass('column').removeClass('ui-sortable').removeClass('draggable').removeClass('box').removeClass('preview').removeClass('ui-draggable').removeAttr('data-original-title').removeAttr('title');
+            if ($(this).attr('class') == "") {
+                $(this).removeAttr('class');
+            }
+        });
+        var zz = "";
+        dwnld_html.each(function() {
+            zz += $(this).html();
+        });
+        return zz;
+    }
+
     function saveAttributes(that) {
         var field = $(that.parents().find('.arrow')[0]).parent().prev();
         var field_options_textarea = that.closest('form').find('#options-textarea').val();
@@ -83,6 +100,86 @@ $('document').ready(function() {
             $(field.children()[1]).addClass('btn');
         }
     }
+    function makeDraggable() {
+        $(".sortable").sortable({opacity: .35, connectWith: ".column"});
+        $(".draggable").draggable({
+            helper: 'clone',
+            opacity: .35,
+            start: function() {
+                dragged_clone = null;
+            },
+            stop: function(e, t) {
+                if ($(this).draggable('widget').attr('id') === 'grid') {
+                    var grid = gridSystemGenerator($($(this).draggable('widget').children()[1]));
+                    if (grid) {
+                        grid.appendTo($('.sortable').not('.column'));
+                        grid.find('.sortable').each(function() {
+                            $(this).sortable({opacity: .35, connectWith: ".column"});
+                        });
+                        $('.sortable').delegate('.close-grid', 'click', function() {
+                            $(this).next().remove();
+                            $(this).remove();
+                        });
+                    }
+                }
+                else if ($('#html-container').children().length > 0) {
+                    dragged_clone = $(this).draggable('widget').clone();
+                    dragged_clone.popover({
+                        html: true,
+                        content: function() {
+                            return $("#popover-" + $(this).attr('id')).html();
+                        }
+                    });
+                    $('.sortable.column').on('mouseover', function(event) {
+                        if (dragged_clone) {
+                            dragged_clone.appendTo($(this));
+                        }
+                        dragged_clone = null;
+                    });
+                    $('.sortable.column').delegate('button#saveattr', 'click', function(e) {
+                        e.preventDefault();
+                        saveAttributes($(this));
+                    });
+                    $('.sortable.column').delegate('button#cancel', 'click', function(e) {
+                        e.preventDefault();
+                        $('.draggable').popover('hide');
+                    });
+                    $('.sortable.column').delegate('button#remove', 'click', function(e) {
+                        e.preventDefault();
+                        var field = $($(this).parents().find('.arrow')[0]).parent().prev();
+                        $('.draggable').popover('hide');
+                        field.remove();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                    });
+                }
+                else {
+                    alert('Elements can only be dragged on grids, Please drag a grid first !');
+                }
+            }
+        });
+        function gridSystemGenerator(details) {
+            var e = 0;
+            var t = '<div><a class="remove label label-important close-grid"><i class="icon-remove icon-white"></i>Remove</a><div class="row-fluid clearfix">';
+            var n = details.val().split(" ", 12);
+            $.each(n, function(n, r) {
+                if (!isNaN(parseInt(r))) {
+                    e = e + parseInt(r);
+                    t += '<div class="span' + r + ' column sortable"></div>';
+                }
+            });
+            t += '</div></div>';
+            if (e == 12) {
+                return $(t);
+            }
+            else
+            {
+                alert("Total grid column size must be equal to 12");
+                return false;
+            }
+
+        }
+    }
     $.get("assets/components/config.json", function(response) {
         var components = response["components"];
         var i = 0;
@@ -113,103 +210,14 @@ $('document').ready(function() {
         };
         load_file("assets/components/elements/" + components[i] + ".html");
         var dragged_clone = null;
-        function makeDraggable() {
-            $(".sortable").sortable({opacity: .35, connectWith: ".column"});
-            $(".draggable").draggable({
-                helper: 'clone',
-                opacity: .35,
-                start: function() {
-                    dragged_clone = null;
-                },
-                stop: function(e, t) {
-                    if ($(this).draggable('widget').attr('id') === 'grid') {
-                        var grid = gridSystemGenerator($($(this).draggable('widget').children()[1]));
-                        if (grid) {
-                            grid.appendTo($('.sortable').not('.column'));
-                            grid.find('.sortable').each(function() {
-                                $(this).sortable({opacity: .35, connectWith: ".column"});
-                            });
-                            $('.sortable').delegate('.close-grid', 'click', function() {
-                                $(this).next().remove();
-                                $(this).remove();
-                            });
-                        }
-                    }
-                    else if ($('#html-container').children().length > 0) {
-                        dragged_clone = $(this).draggable('widget').clone();
-                        dragged_clone.popover({
-                            html: true,
-                            content: function() {
-                                return $("#popover-" + $(this).attr('id')).html();
-                            }
-                        });
-                        $('.sortable.column').on('mouseover', function(event) {
-                            if (dragged_clone) {
-                                dragged_clone.appendTo($(this));
-                            }
-                            dragged_clone = null;
-                        });
-                        $('.sortable.column').delegate('button#saveattr', 'click', function(e) {
-                            e.preventDefault();
-                            saveAttributes($(this));
-                        });
-                        $('.sortable.column').delegate('button#cancel', 'click', function(e) {
-                            e.preventDefault();
-                            $('.draggable').popover('hide');
-                        });
-                        $('.sortable.column').delegate('button#remove', 'click', function(e) {
-                            e.preventDefault();
-                            var field = $($(this).parents().find('.arrow')[0]).parent().prev();
-                            $('.draggable').popover('hide');
-                            field.remove();
-                            e.stopPropagation();
-                            e.stopImmediatePropagation();
-                        });
-                    }
-                    else {
-                        alert('Elements can only be dragged on grids, Please drag a grid first !');
-                    }
-                }
-            });
-            function gridSystemGenerator(details) {
-                var e = 0;
-                var t = '<div><a class="remove label label-important close-grid"><i class="icon-remove icon-white"></i>Remove</a><div class="row-fluid clearfix">';
-                var n = details.val().split(" ", 12);
-                $.each(n, function(n, r) {
-                    if (!isNaN(parseInt(r))) {
-                        e = e + parseInt(r);
-                        t += '<div class="span' + r + ' column sortable"></div>';
-                    }
-                });
-                t += '</div></div>';
-                if (e == 12) {
-                    return $(t);
-                }
-                else
-                {
-                    alert("Total grid column size must be equal to 12");
-                    return false;
-                }
 
-            }
-        }
     });
     $('#download-html').click(function() {
-        var dwnld_html = $($('#html-container').html());
-        dwnld_html.find('.close-grid').remove();
-        var clsElements = dwnld_html.find("*");
-        $(clsElements).each(function() {
-            $(this).removeClass('sortable').removeClass('column').removeClass('ui-sortable').removeClass('draggable').removeClass('box').removeClass('preview').removeClass('ui-draggable').removeAttr('data-original-title').removeAttr('title');
-            if ($(this).attr('class') == "") {
-                $(this).removeAttr('class');
-            }
-        });
-        var zz = "";
-        dwnld_html.each(function() {
-            zz += $(this).html();
-        });
+        var zz = cleanup();
         var blob = new Blob([zz], {type: "text/plain;charset=utf-8"});
         saveAs(blob, "output.html");
     });
-
+    $('#preview-html').on('click', function() {
+        $('#modal-body').html(cleanup());
+    });
 });

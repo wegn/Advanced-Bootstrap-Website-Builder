@@ -16,7 +16,17 @@
         <script src="assets/js/lib/jquery.ui.touch-punch.min.js"></script>
         <script src="assets/js/lib/bootstrap-tooltip.js"></script>
         <script src="assets/js/lib/bootstrap-popover.js"></script>
+        <script src="assets/js/lib/bootstrap-modal.js"></script>
+        <script src="assets/js/lib/bootstrap-transition.js"></script>
         <script src="assets/js/main.js"></script>
+        <style>
+            body .modal {
+                /* new custom width */
+                width: 1100px;
+                /* must be half of the width, minus scrollbar on the left (30px) */
+                margin-left: -550px;
+            }
+        </style>
     </head>
     <body>
         <div class="navbar navbar-inverse navbar-fixed-top">
@@ -24,24 +34,41 @@
                 <div class="container-fluid">
                     <div class="nav-collapse collapse">
                         <a href="#" class="brand">Advanced Bootstrap Website Builder</a>
-                        <button id="download-html" class="btn btn-success" type="button">Download HTML</button>
+                        <div class="btn-group">
+                            <button href="#myModal" type="button" class="btn btn-success" data-toggle="modal" id="preview-html"><i class="icon-eye-open icon-white"></i>Preview</button>
+                            <button type="button" class="btn btn-success" id="download-html"><i class="icon-download icon-white"></i>Download</button>
+                        </div>
                     </div>
                     <!--/.nav-collapse --> 
                 </div>
             </div>
         </div>
-        <div class="container-fluid"><h1>Drag and drop elements to create UI</h1></div>
-        
-        <div class="container-fluid">
-            <div class="row-fluid top-container">
-                <div class="">
-                    <div class="sidebar-nav">
-                        <ul class="nav nav-list accordion-group">
-                            <li style="display: list-item;" class="rows elements"></li>
-                        </ul>
+        <div id="main-content">
+            <div class="container-fluid"><h1>Drag and drop elements to create UI</h1></div>
+
+            <div class="container-fluid">
+                <div class="row-fluid top-container">
+                    <div class="">
+                        <div class="sidebar-nav">
+                            <ul class="nav nav-list accordion-group">
+                                <li style="display: list-item;" class="rows elements"></li>
+                            </ul>
+                        </div>
                     </div>
+                    <div id="html-container" class="sortable"></div>
                 </div>
-                <div id="html-container" class="sortable"></div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">Preview</h3>
+            </div>
+            <div id="modal-body" class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
             </div>
         </div>
     </body>
